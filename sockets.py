@@ -104,14 +104,14 @@ def hello():
 def read_ws(ws):
     '''A greenlet function that reads from the websocket and updates the world'''
     # XXX: TODO IMPLEMENT ME
-    print("start reading")
     try:
         while True:
-            print("waiting...")
             msg = ws.receive()
             print("WS RECV: %s" % msg)
             if (msg is not None):
                 packet = json.loads(msg)
+                for entity, data in packet.items():
+                    myWorld.set(entity, data)
                 print("send to all clients")
                 send_all_json( packet )
             else:
@@ -134,7 +134,6 @@ def subscribe_socket(ws):
         while True:
             # block here
             msg = client.get()
-            print("Got a message!")
             ws.send(msg)
     except Exception as e:# WebSocketError as e:
         print("WS Error %s" % e)
@@ -183,7 +182,7 @@ def get_entity(entity):
 def clear():
     '''Clear the world out!'''
     myWorld.clear()
-    return myWorld.world()
+    return json.dumps( myWorld.world()  )
 
 
 
